@@ -1,7 +1,15 @@
-export default function Home() {
+import Header from '@/components/Header';
+import HeroSection from '@/components/HeroSection';
+import FeaturedList from '@/components/FeaturedList';
+
+export default function HomePage() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-3xl font-bold">Bem-vindo ao Blog!</h1>
-    </main>
-  )
+    <>
+      <Header />
+      <main>
+        <HeroSection />
+        <FeaturedList />
+      </main>
+    </>
+  );
 }
