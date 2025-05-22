@@ -1,49 +1,51 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-const featuredList = [
-  {
-    id: 1,
-    number: '01',
-    title: '5 Gerações de Redes 5G: O Que Esperar da Próxima Revolução da Conectividade',
-    date: 'Março 19, 2025',
-    imageUrl: '/images/5g.jpg',
-    slug: '#',
-  },
-  {
-    id: 2,
-    number: '02',
-    title: 'Blockchain Além das Criptomoedas: Como a Tecnologia Está Transformando Indústrias Tradicionais',
-    date: 'Março 18, 2025',
-    imageUrl: '/images/blockchain.jpg',
-    slug: '#',
-  },
-  {
-    id: 3,
-    number: '03',
-    title: 'Dominando TypeScript: Por que a Tipagem Estática Está Transformando o Desenvolvimento',
-    date: 'Março 16, 2025',
-    imageUrl: '/images/typescript.jpg',
-    slug: '#',
-  },
-];
+export type Article = {
+  id: string;
+  title: string;
+  author: {
+    id: string;
+    name: string;
+  };
+  publishedAt: string;
+  image?: string | null;
+  thumbnailUrl?: string | null;
+};
 
-export default function FeaturedList() {
+interface FeaturedListProps {
+  articles: Article[];
+}
+
+export function FeaturedList({ articles }: FeaturedListProps) {
+  const topThree = articles.slice(0, 3);
   return (
     <section className="px-8 py-10">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-        {featuredList.map((item) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {topThree.map((item) => (
           <article key={item.id} className="space-y-2">
-            <div className="text-4xl font-bold">{item.number}</div>
-            <div className="relative w-full h-40 rounded overflow-hidden">
-              <Image src={item.imageUrl} alt={item.title} fill style={{ objectFit: 'cover' }} />
+            <div className="relative w-full h-80 rounded overflow-hidden">
+              {item.thumbnailUrl ? (
+                <Image
+                  src={item.thumbnailUrl}
+                  alt={item.title}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200" />
+              )}
             </div>
             <h3 className="text-lg font-semibold leading-snug">
-              <Link href={item.slug} className="hover:underline block">
+              <Link href={`/articles/${item.id}`} className="hover:underline block">
                 {item.title}
               </Link>
             </h3>
-            <p className="text-sm text-gray-500">{item.date}</p>
+            <div className="text-sm text-gray-500">
+              {new Date(item.publishedAt).toLocaleDateString('pt-BR', {
+                day: '2-digit', month: 'long', year: 'numeric'
+              })} • Por {item.author.name}
+            </div>
           </article>
         ))}
       </div>

@@ -2,7 +2,13 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  
+  images: {
+    domains: [
+      'picsum.photos',
+      'localhost' // caso utilize imagens locais
+    ],
+    formats: ['image/avif', 'image/webp'],
+  },
   transpilePackages: ['@nodelib/fs.scandir'],
 
   webpack(config, { isServer }) {
