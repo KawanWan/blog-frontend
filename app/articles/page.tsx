@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Header from "@/components/Header";
 import { getArticles, Article as APIArticle } from "@/utils/api";
 
 interface Article extends APIArticle {
@@ -41,7 +40,6 @@ export default function ArticlesPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Header />
       <main className="container mx-auto px-6 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {visibleArticles.map((article) => (

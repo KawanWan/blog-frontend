@@ -1,18 +1,13 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { loginRequest, getProfile } from '@/utils/api';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
+import { User as ApiUser, loginRequest, getProfile } from '@/utils/api';
 
 interface AuthContextType {
-  user: User | null;
+  user: ApiUser | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -21,7 +16,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<ApiUser | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -29,10 +24,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       getProfile()
-        .then(data => setUser(data))
+        .then(profile => setUser(profile))
         .catch(() => logout());
     }
-  }, []);
+  });
 
   const login = async (email: string, password: string) => {
     const data = await loginRequest(email, password);
@@ -42,7 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
 
-    router.push('/dashboard');
+    router.push('/');
   };
 
   const logout = () => {
