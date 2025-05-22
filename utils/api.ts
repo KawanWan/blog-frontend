@@ -15,17 +15,14 @@ const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
+console.log('Axios baseURL:', api.defaults.baseURL);
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-
-  if (!config.headers) {
-    config.headers = {};
-  }
-
+  if (!config.headers) config.headers = {};
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-
   return config;
 });
 
@@ -56,5 +53,26 @@ export const loginRequest = async (
 
 export const getProfile = async (): Promise<User> => {
   const response = await api.get<User>('/auth/me');
+  return response.data;
+};
+
+export interface Article {
+  id: number;
+  title: string;
+  excerpt: string;
+  thumbnailUrl?: string;
+  author: { id: string; name: string };
+  publishedAt: string;
+}
+
+export const getArticles = async (): Promise<Article[]> => {
+  const response = await api.get<Article[]>('/articles');
+  return response.data;
+};
+
+export const getArticleById = async (
+  id: number
+): Promise<Article> => {
+  const response = await api.get<Article>(`/articles/${id}`);
   return response.data;
 };
