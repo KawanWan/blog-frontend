@@ -1,18 +1,17 @@
-import '../styles/globals.css'
-import { ReactNode } from 'react'
+// app/layout.tsx
+import '../styles/globals.css';
+import { AuthProvider } from '@/context/AuthContext';
+import Header from '@/components/Header';    // <-- importe o Header
 
-export const metadata = {
-  title: 'Seu Blog',
-  description: 'Frontend do blog com TailwindCSS e Next.js',
-}
-
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <head /> 
-      <body className="font-sans antialiased">
-        {children}
+      <body>
+        <AuthProvider>
+          <Header />
+          {children}
+        </AuthProvider>
       </body>
     </html>
-  )
+  );
 }

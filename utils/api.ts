@@ -1,78 +1,98 @@
-import axios from 'axios';
+import axios from 'axios'
 
+/** Tipos compartilhados */
 export interface User {
-  id: number;
-  name: string;
-  email: string;
+  id: string
+  name: string
+  email: string
+  avatar: string | null
 }
 
-interface LoginResponse {
-  user: User;
-  token: string;
+export interface LoginResponse {
+  token: string
+  user: User
 }
 
+export interface Author {
+  id: string
+  name: string
+}
+
+export interface Article {
+  id: string
+  title: string
+  excerpt: string
+  thumbnailUrl?: string
+  author: Author
+  publishedAt: string
+}
+
+export interface ArticleDetail extends Omit<Article, 'excerpt'> {
+  content: string
+  updatedAt: string
+  image?: string
+}
+
+/** Cria instância do Axios apontando pro seu backend */
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
-});
+})
 
-console.log('Axios baseURL:', api.defaults.baseURL);
+/** Interceptor de requisição: injeta token */
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => Promise.reject(error)
+)
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (!config.headers) config.headers = {};
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
+/** Interceptor de resposta: trata 401/403 */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+    if ([401, 403].includes(error.response?.status ?? 0)) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
     }
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
-export default api;
+/** Busca lista de artigos */
+export const getArticles = async (): Promise<Article[]> => {
+  const { data } = await api.get<Article[]>('/articles')
+  return data
+}
 
+/** Busca detalhe de um artigo */
+export const getArticleById = async (
+  id: string
+): Promise<ArticleDetail> => {
+  const { data } = await api.get<ArticleDetail>(`/articles/${id}`)
+  return data
+}
+
+/** Faz login e retorna token + user */
 export const loginRequest = async (
   email: string,
   password: string
 ): Promise<LoginResponse> => {
-  const response = await api.post<LoginResponse>('/auth/login', {
+  const { data } = await api.post<LoginResponse>('/users/login', {
     email,
     password,
-  });
-  return response.data;
-};
-
-export const getProfile = async (): Promise<User> => {
-  const response = await api.get<User>('/auth/me');
-  return response.data;
-};
-
-export interface Article {
-  id: number;
-  title: string;
-  excerpt: string;
-  thumbnailUrl?: string;
-  author: { id: string; name: string };
-  publishedAt: string;
+  })
+  return data
 }
 
-export const getArticles = async (): Promise<Article[]> => {
-  const response = await api.get<Article[]>('/articles');
-  return response.data;
-};
+/** Pega perfil do usuário logado */
+export const getProfile = async (): Promise<User> => {
+  const { data } = await api.get<User>('/users/profile')
+  return data
+}
 
-export const getArticleById = async (
-  id: number
-): Promise<Article> => {
-  const response = await api.get<Article>(`/articles/${id}`);
-  return response.data;
-};
+export default api

@@ -1,5 +1,3 @@
-// App Router page (app/page.tsx)
-import Header from '@/components/Header';
 import { FeaturedList, Article } from '@/components/FeaturedList';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -25,7 +23,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <Header />
       <main className="px-8 py-10 space-y-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Hero à esquerda */}
