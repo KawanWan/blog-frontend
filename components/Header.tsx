@@ -24,7 +24,7 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (pathname === "/login" || pathname === "/register") return null;
+  if (pathname === "/login" || pathname === "/register" || pathname === "/forgot-password" || pathname === "/reset-password") return null;
 
   const avatarSrc = user?.avatar ? `data:image/jpeg;base64,${user.avatar}` : null;
 

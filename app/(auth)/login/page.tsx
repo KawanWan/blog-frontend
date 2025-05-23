@@ -46,6 +46,12 @@ export default function LoginPage() {
 
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
+        <p className="mt-2 text-right text-sm">
+          <Link href="/forgot-password" className="text-blue-600 hover:underline">
+            Esqueci minha senha
+          </Link>
+        </p>
+
         <button type="submit" className="w-full bg-black text-white py-2 rounded-full hover:bg-gray-900 transition" disabled={loading}>
           {loading ? "Entrando..." : "Entrar"}
         </button>
