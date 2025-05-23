@@ -33,12 +33,12 @@ export interface ArticleDetail extends Omit<Article, 'excerpt'> {
   image?: string
 }
 
-/** Cria instância do Axios apontando pro seu backend */
+/** Instância do Axios apontando para o backend */
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 })
 
-/** Interceptor de requisição: injeta token */
+/** Interceptor para injetar token JWT */
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')
@@ -50,7 +50,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
-/** Interceptor de resposta: trata 401/403 */
+/** Interceptor para tratar 401/403 e redirecionar */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -75,6 +75,28 @@ export const getArticleById = async (
 ): Promise<ArticleDetail> => {
   const { data } = await api.get<ArticleDetail>(`/articles/${id}`)
   return data
+}
+
+/** Cria novo artigo */
+export const createArticle = async (
+  formData: FormData
+): Promise<ArticleDetail> => {
+  const { data } = await api.post<ArticleDetail>('/articles', formData)
+  return data
+}
+
+/** Atualiza um artigo existente (PUT multipart/form-data) */
+export const updateArticle = async (
+  id: string,
+  formData: FormData
+): Promise<ArticleDetail> => {
+  const { data } = await api.put<ArticleDetail>(`/articles/${id}`, formData)
+  return data
+}
+
+/** Remove um artigo */
+export const deleteArticle = async (id: string): Promise<void> => {
+  await api.delete(`/articles/${id}`)
 }
 
 /** Faz login e retorna token + user */

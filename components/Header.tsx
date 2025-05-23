@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -11,17 +11,12 @@ export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const router = useRouter();
 
-  // Estado do dropdown
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fecha dropdown ao clicar fora
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     }
@@ -29,13 +24,9 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Não renderiza em /login ou /register
   if (pathname === "/login" || pathname === "/register") return null;
 
-  // Se for Base64 puro, transforma em data URI
-  const avatarSrc = user?.avatar
-    ? `data:image/jpeg;base64,${user.avatar}`
-    : null;
+  const avatarSrc = user?.avatar ? `data:image/jpeg;base64,${user.avatar}` : null;
 
   return (
     <header className="w-full flex items-center justify-between py-4 px-8 bg-white shadow-sm">
@@ -64,21 +55,23 @@ export default function Header() {
               Publicar
             </Link>
 
-            {/* Avatar + Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
-                onClick={() => setOpen(o => !o)}
+                onClick={() => setOpen((o) => !o)}
                 className="focus:outline-none"
               >
                 {avatarSrc ? (
-                  <Image
-                    src={avatarSrc}
-                    alt="Avatar de usuário"
-                    width={32}
-                    height={32}
-                    className="rounded-full object-cover"
-                    unoptimized
-                  />
+                  <div className="w-8 h-8 relative rounded-full overflow-hidden">
+                    <Image
+                      src={avatarSrc}
+                      alt="Avatar de usuário"
+                      fill
+                      sizes="32px"
+                      loader={({ src }) => src}
+                      unoptimized
+                      className="object-cover"
+                    />
+                  </div>
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
                     <span className="text-gray-600">👤</span>
